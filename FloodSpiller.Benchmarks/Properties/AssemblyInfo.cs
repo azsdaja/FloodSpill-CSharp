@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FloodSpiller")]
+[assembly: AssemblyTitle("FloodSpiller.Benchmarks")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("FloodSpiller")]
+[assembly: AssemblyProduct("FloodSpiller.Benchmarks")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("a92a81c3-99d7-4ea4-966c-e1626fb6e883")]
+[assembly: Guid("7a7032a4-a334-4def-8876-024057759f13")]
 
 // Version information for an assembly consists of the following four values:
 //

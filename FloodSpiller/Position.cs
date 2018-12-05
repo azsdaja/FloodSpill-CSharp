@@ -4,16 +4,14 @@ namespace FloodSpiller
 {
 	public struct Position : IEquatable<Position>
 	{
-		private readonly int _y;
-
 		public int X { get; }
 
-		public int Y => _y;
+		public int Y { get; }
 
 		public Position(int x, int y)
 		{
 			X = x;
-			_y = y;
+			Y = y;
 		}
 
 		public static Position MinValue = new Position(Int32.MinValue, Int32.MinValue);

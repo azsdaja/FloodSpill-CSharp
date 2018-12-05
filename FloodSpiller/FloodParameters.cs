@@ -15,6 +15,10 @@ namespace FloodSpiller
 		public FloodParameters(PositionQueueAdapter positionsToVisitQueue, int startX, int startY) 
 		{
 			PositionsToVisitQueue = positionsToVisitQueue;
+			if (PositionsToVisitQueue.Any())
+			{
+				throw new ArgumentException("Provided queue should be empty when being passed to FloodParameters.", nameof(positionsToVisitQueue));
+			}
 			StartX = startX;
 			StartY = startY;
 		}

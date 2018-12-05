@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace FloodSpiller.Queues
 {
@@ -14,7 +13,7 @@ namespace FloodSpiller.Queues
 
 		public override bool Any()
 		{
-			return _queue.Any();
+			return _queue.Count > 0; // note: using _queue.Any() would cause an allocation of new Queue.Enumerator each time!
 		}
 
 		public override void Enqueue(int x, int y)

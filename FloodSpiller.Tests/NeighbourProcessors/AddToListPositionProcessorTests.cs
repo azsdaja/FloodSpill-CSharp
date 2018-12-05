@@ -4,7 +4,7 @@ using FloodSpiller.NeighbourProcessors;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace FloodSpiller.Tests
+namespace FloodSpiller.Tests.NeighbourProcessors
 {
 	public class AddToListPositionProcessorTests
 	{

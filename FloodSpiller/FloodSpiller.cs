@@ -76,6 +76,10 @@ namespace FloodSpiller
 			SpreadingPositionVisitor = parameters.SpreadingPositionVisitor;
 			SpreadingPositionStopCondition = parameters.SpreadingPositionStopCondition;
 			PositionsToVisit = parameters.PositionsToVisitQueue;
+			if (PositionsToVisit.Any())
+			{
+				throw new ArgumentException("Provided PositionsToVisitQueue should be empty when being passed to FloodParameters.", nameof(parameters));
+			}
 			FloodBounds boundsRestriction = parameters.BoundsRestriction
 				?? new FloodBounds(markMatrix.GetLength(0), markMatrix.GetLength(1));
 			GuardBounds(boundsRestriction, StartX, StartY);

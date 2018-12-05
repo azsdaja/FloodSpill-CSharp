@@ -21,7 +21,7 @@ namespace FloodSpiller.Queues
 
 		public override bool Any()
 		{
-			return _intervalHeap.Any();
+			return _intervalHeap.Count > 0; // note: using _intervalHeap.Any() would cause an allocation of new IntervalHeap.Enumerator each time!
 		}
 
 		public override void Enqueue(int x, int y)

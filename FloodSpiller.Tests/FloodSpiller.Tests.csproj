@@ -31,6 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="C5, Version=2.5.0.0, Culture=neutral, PublicKeyToken=282361b99ded7e8e, processorArchitecture=MSIL">
+      <HintPath>..\packages\C5.2.5.3\lib\net45\C5.dll</HintPath>
+    </Reference>
+    <Reference Include="dotMemory.Unit, Version=111.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\packages\JetBrains.dotMemoryUnit.3.0.20171219.105559\lib\net35\dotMemory.Unit.dll</HintPath>
+    </Reference>
     <Reference Include="FluentAssertions, Version=5.5.3.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentAssertions.5.5.3\lib\net45\FluentAssertions.dll</HintPath>
     </Reference>
@@ -50,22 +56,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddToListPositionProcessorTests.cs" />
+    <Compile Include="NeighbourProcessors\AddToListPositionProcessorTests.cs" />
     <Compile Include="CommonFloodSpillerPerformanceTests.cs" />
     <Compile Include="CommonFloodSpillerTests.cs" />
-    <Compile Include="FindHighestMarkNeighbourProcessorTests.cs" />
+    <Compile Include="PositionVisitors\AddToListPositionVisitorTests.cs" />
+    <Compile Include="NeighbourProcessors\FindHighestMarkNeighbourProcessorTests.cs" />
     <Compile Include="FloodScanlineSpillerTests.cs" />
     <Compile Include="FloodSpillerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FloodSpiller\FloodSpiller.csproj">
-      <Project>{A92A81C3-99D7-4EA4-966C-E1626FB6E883}</Project>
-      <Name>FloodSpiller</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\FloodSpiller\FloodSpiller.csproj">
+      <Project>{e4122ba0-6382-4d40-86c8-66b1c85424b7}</Project>
+      <Name>FloodSpiller</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

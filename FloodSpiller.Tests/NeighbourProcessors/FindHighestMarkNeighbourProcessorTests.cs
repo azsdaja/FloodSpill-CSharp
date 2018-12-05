@@ -3,7 +3,7 @@ using FloodSpiller.Utilities;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace FloodSpiller.Tests
+namespace FloodSpiller.Tests.NeighbourProcessors
 {
 	[TestFixture]
 	public class FindHighestMarkNeighbourProcessorTests

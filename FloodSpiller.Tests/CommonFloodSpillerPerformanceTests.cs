@@ -3,6 +3,7 @@ using System.Diagnostics;
 using FloodSpiller.Queues;
 using FloodSpiller.Utilities;
 using FluentAssertions;
+using JetBrains.dotMemoryUnit;
 using NUnit.Framework;
 
 namespace FloodSpiller.Tests
@@ -109,27 +110,73 @@ namespace FloodSpiller.Tests
 			Console.WriteLine("normal:" + stopwatch.ElapsedMilliseconds + " ms");
 		}
 
+		//[DotMemoryUnit(CollectAllocations = true)]
 		[Test]
-		public void SpillFlood_HugeOpenArea_ScanlineAndFifoPerformanceComparison()
+		public void SpillFlood_HugeOpenArea_ScanlineAndNormalPerformanceComparison()
 		{
-			int size = 300;
+			int size = 1000;
 			var result = new int[size, size];
 
-			var startPosition = new Position(size / 5, size / 5);
-			var parameters = new FloodParameters(new LifoQueue(), startPosition.X, startPosition.Y);
+			var startPosition = new Position(size/2, size/2);
+			var queue = new FifoQueue();
+			//var queue = new PriorityQueue((p1, p2) => (p1.X + p1.Y).CompareTo((p2.X + p2.Y)));
+			var parameters = new FloodParameters(queue, startPosition.X, startPosition.Y);
 
 			var stopwatch = Stopwatch.StartNew();
 			new FloodScanlineSpiller().SpillFlood(parameters, result);
 			Console.WriteLine("scanline:" + stopwatch.ElapsedMilliseconds);
 			stopwatch.Restart();
+
+
+			//MemoryCheckPoint lastCheck = dotMemory.Check();
+
 			new FloodSpiller().SpillFlood(parameters, result);
 			Console.WriteLine("normal:" + stopwatch.ElapsedMilliseconds);
+/*
+			MemoryCheckPoint checkPoint = dotMemory.Check(memory =>
+			{
+				var traffic = memory.GetTrafficFrom(lastCheck);
+				var difference = memory.GetDifference(lastCheck);
+
+				Console.WriteLine("DIFFERENCE — NEW OBJECTS COUNT;" + difference.GetNewObjects().ObjectsCount);
+				Console.WriteLine("DIFFERENCE — NEW OBJECTS SIZE IN BYTES;" + difference.GetNewObjects().SizeInBytes);
+				Console.WriteLine("TRAFFIC — ALLOCATED OBJECTS COUNT;" + traffic.AllocatedMemory.ObjectsCount);
+				Console.WriteLine("TRAFFIC — ALLOCATED SIZE IN BYTESl" + traffic.AllocatedMemory.SizeInBytes);
+				Console.WriteLine("TRAFFIC — COLLECTED OBJECTS COUNT;" + traffic.CollectedMemory.ObjectsCount);
+				Console.WriteLine("TRAFFIC — COLLECTED SIZE IN BYTESl" + traffic.CollectedMemory.SizeInBytes);
+				Console.WriteLine();
+				Console.WriteLine("NEW OBJECTS WITH COUNT OVER 50:");
+				Console.WriteLine("OBJECT NAME;COUNT;BYTES");
+				var types = difference.GetNewObjects().GroupByType();
+				foreach (var tmi in types)
+				{
+					//if (tmi.ObjectsCount < 50) continue;
+					string full = String.Format("{0};{1};{2}", tmi.Type.ToString(), tmi.ObjectsCount,
+						tmi.SizeInBytes);
+					Console.WriteLine(full);
+				}
+				Console.WriteLine();
+				Console.WriteLine("TRAFFIC OF TYPES WITH COUNT OVER 50:");
+				Console.WriteLine("TYPE NAME;ALLOCATED MEMORY;COLLECTED MEMORY");
+
+				var types2 = traffic.GroupByType();
+				foreach (var tmi in types2)
+				{
+					//if (tmi.AllocatedMemoryInfo.ObjectsCount > 50)
+					{
+						string full = String.Format("{0};{1};{2}", tmi.Type.ToString(), tmi.AllocatedMemoryInfo,
+							tmi.CollectedMemoryInfo);
+						Console.WriteLine(full);
+					}
+				}
+			});
+*/
 		}
 
 		[Test]
 		public void SpillFlood_HugeAreaWithSomeUnwalkableRegions_PerformanceTest()
 		{
-			int size = 1000;
+			int size = 2000;
 			Console.WriteLine("size: " + size);
 			var resultForScanline = new int[size, size];
 			var resultForNormal = new int[size, size];

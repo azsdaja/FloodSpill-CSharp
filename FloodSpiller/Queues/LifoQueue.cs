@@ -14,7 +14,7 @@ namespace FloodSpiller.Queues
 
 		public override bool Any()
 		{
-			return _stack.Any();
+			return _stack.Count > 0; // note: using _stack.Any() causes an allocation of new Stack.Enumerator each time!
 		}
 
 		public override void Enqueue(int x, int y)
