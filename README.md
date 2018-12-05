@@ -2,15 +2,33 @@
 
 ### What can you do with it? ###
 * run a flood-fill in two-dimensional space
-* pass your own conditions for visiting positions and stopping
-* pass your own functions that will execute for visited positions
-* use LIFO, FIFO or priority queue for keeping track of what positions to visit
+* pass your own conditions for visiting positions and for stopping the flood
+* pass your own functions that will be executed for visited positions
+* use LIFO, FIFO or priority queue for deciding in what order positions should be processed
+* use scanline fill to double up execution speed
 
 ### It is:
-* fast enough for most cases
+* fast
 * easy to use
 * elastic
 
-### What is flood-filling?
+### Code sample
 
-(To do)
+```
+private int[,] _positionMarkMatrix;
+
+public void BucketFillImage(int floodStartX, int floodStartY, Color sourceColor, Color targetColor)
+{
+	var floodParameters = new FloodParameters(floodStartX, floodStartY)
+	{
+		BoundsRestriction = new FloodBounds(_imageSizeX, _imageSizeY),
+		NeighbourhoodType = NeighbourhoodType.Four,
+		Qualifier = (x, y) => GetColor(x, y) == sourceColor,
+		NeighbourProcessor = (x, y, mark) => SetColor(x, y, targetColor),
+		ProcessStartAsFirstNeighbour = true
+	};
+
+	var floodSpiller = new FloodSpiller();
+	floodSpiller.SpillFlood(floodParameters, _positionMarkMatrix);
+}
+```
