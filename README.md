@@ -34,3 +34,27 @@ public void BucketFillImage(int floodStartX, int floodStartY, Color replacedColo
 	floodSpiller.SpillFlood(floodParameters, _positionMarkMatrix);
 }
 ```
+
+### Performance (measured with [BenchmarkDotNet](https://benchmarkdotnet.org))
+
+| Area size |       Walls blocking flood | Mode |          Average time |
+|--------- |--------------------- |-------------- |--------------:|
+|       **20x20** |                 **No walls (open area)** |         **Normal** |      **32 µs** |
+|       **20x20** |                 **No walls (open area)** |          **Scanline** |      **14 µs** |
+|       **20x20** | **Sparse pillars (11% of area)** |         **Normal** |      **31 µs** |
+|       **20x20** | **Sparse pillars (11% of area)** |          **Scanline** |      **25 µs** |
+|       **20x20** | **Circular walls (50% of area)** |         **Normal** |      **19 µs** |
+|       **20x20** | **Circular walls (50% of area)** |          **Scanline** |      **11 µs** |
+|      **200x200** |                 **No walls (open area)** |         **Normal** |   **3,222 µs** |
+|      **200x200** |                 **No walls (open area)** |          **Scanline** |   **1,249 µs** |
+|      **200x200** | **Sparse pillars (11% of area)** |         **Normal** |   **2,868 µs** |
+|      **200x200** | **Sparse pillars (11% of area)** |          **Scanline** |   **2,624 µs** |
+|      **200x200** | **Circular walls (50% of area)** |         **Normal** |   **1,877 µs** |
+|      **200x200** | **Circular walls (50% of area)** |          **Scanline** |     **947 µs** |
+|     **2000x2000** |                 **No walls (open area)** |         **Normal** | **355,445 µs** |
+|     **2000x2000** |                 **No walls (open area)** |          **Scanline** | **124,329 µs** |
+|     **2000x2000** | **Sparse pillars (11% of area)** |         **Normal** | **309,879 µs** |
+|     **2000x2000** | **Sparse pillars (11% of area)** |          **Scanline** | **267,670 µs** |
+|     **2000x2000** | **Circular walls (50% of area)** |         **Normal** | **204,312 µs** |
+|     **2000x2000** | **Circular walls (50% of area)** |          **Scanline** |  **92,618 µs** |
+
