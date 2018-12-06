@@ -78,7 +78,7 @@ namespace FloodSpiller
 			PositionsToVisit = parameters.PositionsToVisitQueue;
 			if (PositionsToVisit.Any())
 			{
-				throw new ArgumentException("Provided PositionsToVisitQueue should be empty when being passed to FloodParameters.", nameof(parameters));
+				throw new ArgumentException("Provided PositionsToVisitQueue was not empty at the beginning of flood spilling.", nameof(parameters));
 			}
 			FloodBounds boundsRestriction = parameters.BoundsRestriction
 				?? new FloodBounds(markMatrix.GetLength(0), markMatrix.GetLength(1));

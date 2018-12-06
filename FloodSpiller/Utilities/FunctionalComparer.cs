@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace FloodSpiller.Utilities
 {
-	public class FunctionalComparer<T> : IComparer<T>
+	internal class FunctionalComparer<T> : IComparer<T>
 	{
 		private readonly Func<T, T, int> _comparer;
 

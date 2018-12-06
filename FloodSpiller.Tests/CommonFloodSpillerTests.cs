@@ -12,6 +12,17 @@ namespace FloodSpiller.Tests
 		private static readonly object[] AllSpillers = {new FloodSpiller(), new FloodScanlineSpiller()};
 
 		[TestCaseSource(nameof(AllSpillers))]
+		public void SpillFlood_QueueIsNotEmptyAtBeginning_ThrowsArgumentException(FloodSpiller floodSpiller)
+		{
+			var parameters = new FloodParameters(123, 456);
+			parameters.PositionsToVisitQueue.Enqueue(1, 1);
+
+			Action action = () => floodSpiller.SpillFlood(parameters, new int[10, 10]);
+
+			action.Should().Throw<ArgumentException>();
+		}
+
+		[TestCaseSource(nameof(AllSpillers))]
 		public void SpillFlood_ResultArrayIsSmallerThanGivenBounds_ThrowsArgumentException(FloodSpiller floodSpiller)
 		{
 			int boundsSize = 4;
