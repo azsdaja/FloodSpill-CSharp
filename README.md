@@ -16,6 +16,8 @@
 * elastic,
 * compatible with .NET Standard 2.0 and .NET Framework 3.5.
 
+It can for example be used in games (roguelikes, RTS, RPG) to calculate so called **influence maps**, **scent maps**, **Dijkstra maps** et cætera.
+
 ### Usage example
 
 ```csharp
@@ -34,7 +36,7 @@ var markMatrix = new int[6, 5];
 new FloodSpiller().SpillFlood(floodParameters, markMatrix);
 ```
 
-Code above fills `markMatrix` with numbers indicating in how many steps a position is reachable:
+Code above fills `markMatrix` with numbers indicating in how many steps the starting position is reachable:
 
 ![presentation](https://github.com/azsdaja/FloodSpill-CSharp/blob/master/flood_presentation.gif)
 
