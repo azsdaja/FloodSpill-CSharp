@@ -1,18 +1,18 @@
 # FloodSpiller-CSharp — an open-source multi-purpose flood-filling algorithm for C#
 
 ### What can you do with it? ###
-* run a flood-fill in two-dimensional space
-* pass your own conditions for visiting positions and for stopping the flood
-* pass your own functions that will be executed for visited positions
-* use LIFO, FIFO or priority queue for deciding in what order positions should be processed
-* use scanline fill to double up execution speed
-* reuse matrix used for marking visited positions to save memory
+* run a **flood-fill in two-dimensional space**
+* pass your own **conditions** for visiting positions and for stopping the flood
+* pass your own **callbacks** that will be executed for visited positions
+* use **LIFO, FIFO or priority queue** for deciding in what order positions should be processed
+* use **scanline fill** to **double up execution speed**
+* reuse position queue and the matrix used for marking visited positions to **minimize memory allocation**
 
 ### It is:
 * fast
 * easy to use
 * elastic
-* running on .NET Framework 3.5+
+* compatible with .NET Standard 2.0 and .NET Framework 3.5
 
 ### Code sample
 
@@ -35,9 +35,9 @@ public void BucketFillImage(int floodStartX, int floodStartY, Color replacedColo
 }
 ```
 
-### Performance (measured with [BenchmarkDotNet](https://benchmarkdotnet.org))
+### Performance report (measured with [BenchmarkDotNet](https://benchmarkdotnet.org))
 
-| Area size |       Walls blocking flood | Mode |          Average time |
+| Area size |       Walls blocking flood | Mode |          Average execution time |
 |--------- |--------------------- |-------------- |--------------:|
 |       **20x20** |                 **No walls (open area)** |         **Normal** |      **32 µs** |
 |       **20x20** |                 **No walls (open area)** |          **Scanline** |      **14 µs** |
