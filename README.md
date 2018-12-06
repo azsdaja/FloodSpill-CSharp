@@ -6,7 +6,7 @@
 * run a **flood-fill in two-dimensional space**,
 * pass your own **conditions** for visiting positions and for stopping the flood,
 * pass your own **callbacks** that will be executed for visited positions,
-* use **LIFO, FIFO or priority queue** for deciding in what order positions should be processed,
+* use **LIFO, FIFO or priority queue** for deciding in what order positions should be visited,
 * decide if you allow **diagonal neighbourhood** of positions or not,
 * use **scanline fill** to **double up execution speed**.
 
@@ -17,6 +17,8 @@
 * compatible with .NET Standard 2.0 and .NET Framework 3.5.
 
 It can for example be used in games (roguelikes, RTS, RPG) to calculate so called **influence maps**, **scent maps**, **Dijkstra maps** et cætera.
+
+---
 
 ### Usage example
 
@@ -40,6 +42,8 @@ Code above fills `markMatrix` with numbers indicating in how many steps the star
 
 ![presentation](https://github.com/azsdaja/FloodSpill-CSharp/blob/master/flood_presentation.gif)
 
+---
+
 ### More advanced example
 
 ``` csharp
@@ -61,7 +65,9 @@ public void BucketFillImage(int floodStartX, int floodStartY, Color replacedColo
 }
 ```
 
-For more instructions and code examples see [**Getting started**](https://github.com/azsdaja/FloodSpill-CSharp/wiki/Getting-started) section in wiki.
+**For more instructions and code examples see [**Getting started**](https://github.com/azsdaja/FloodSpill-CSharp/wiki/Getting-started) section in wiki.**
+
+---
 
 ### Performance report measured with [BenchmarkDotNet](https://benchmarkdotnet.org)
 (with checking for wall presence by accessing a bool[,] matrix; measured on a good 2016 laptop with Intel i7-6700HQ)
