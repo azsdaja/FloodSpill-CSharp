@@ -1,4 +1,6 @@
-# FloodSpiller-CSharp — an open-source multi-purpose flood-filling algorithm for C#
+![logo](https://github.com/azsdaja/FloodSpill-CSharp/blob/master/icon48x48.png)
+
+# FloodSpill — an open-source multi-purpose flood-filling algorithm for C#
 
 ### What can you do with it? ###
 * run a **flood-fill in two-dimensional space**
@@ -14,13 +16,14 @@
 * elastic
 * compatible with .NET Standard 2.0 and .NET Framework 3.5
 
-### Code sample
+### Usage example
 
-```
+``` csharp
 private int[,] _positionMarkMatrix;
 
 public void BucketFillImage(int floodStartX, int floodStartY, Color replacedColor, Color targetColor)
 {
+	var floodSpiller = new FloodSpiller();
 	var floodParameters = new FloodParameters(floodStartX, floodStartY)
 	{
 		BoundsRestriction = new FloodBounds(_imageSizeX, _imageSizeY),
@@ -30,12 +33,13 @@ public void BucketFillImage(int floodStartX, int floodStartY, Color replacedColo
 		ProcessStartAsFirstNeighbour = true
 	};
 
-	var floodSpiller = new FloodSpiller();
 	floodSpiller.SpillFlood(floodParameters, _positionMarkMatrix);
 }
 ```
 
-### Performance report (measured with [BenchmarkDotNet](https://benchmarkdotnet.org))
+For more instructions and code examples see [**Getting started**](https://github.com/azsdaja/FloodSpill-CSharp/wiki/Getting-started) section in wiki.
+
+### Performance report (measured with [BenchmarkDotNet](https://benchmarkdotnet.org)):
 
 | Area size |       Walls blocking flood | Mode |          Average execution time |
 |--------- |--------------------- |-------------- |--------------:|
