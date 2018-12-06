@@ -4,6 +4,18 @@
     <FileUpgradeFlags>40</FileUpgradeFlags>
     <OldToolsVersion>15.0</OldToolsVersion>
     <UpgradeBackupLocation>D:\Projekty\FloodSpiller-CSharp\Backup2\</UpgradeBackupLocation>
+    <Authors>Paweł Ślusarczyk</Authors>
+    <Company />
+    <Description>FloodSpiller is a fast multi-purpose flood-fill algorithm for C#. Run a flood in two-dimensional space, configure it with your own conditions and callbacks, choose between FIFO, LIFO or priority based-order for processing positions. Includes possibility of performing scanline-fill for better performance.</Description>
+    <PackageProjectUrl>https://github.com/azsdaja/FloodSpiller-CSharp</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/azsdaja/FloodSpiller-CSharp/blob/master/LICENSE</PackageLicenseUrl>
+    <Copyright />
+    <RepositoryUrl>https://github.com/azsdaja/FloodSpiller-CSharp</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>flood-fill flood-filling flood fill filling floodfill scanline grid roguelike</PackageTags>
+    <PackageIconUrl>https://github.com/azsdaja/FloodSpiller-CSharp/blob/master/icon.png?raw=true</PackageIconUrl>
+    <PackageReleaseNotes>First complete release.</PackageReleaseNotes>
+    <PackageId>FloodSpiller</PackageId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="C5" Version="2.5.3" />
