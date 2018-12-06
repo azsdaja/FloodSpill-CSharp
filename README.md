@@ -62,7 +62,7 @@ public void BucketFillImage(int floodStartX, int floodStartY, Color replacedColo
 For more instructions and code examples see [**Getting started**](https://github.com/azsdaja/FloodSpill-CSharp/wiki/Getting-started) section in wiki.
 
 ### Performance report measured with [BenchmarkDotNet](https://benchmarkdotnet.org)
-(with checking for wall presence by accessing a bool[,] matrix)
+(with checking for wall presence by accessing a bool[,] matrix; measured on a good 2016 laptop with Intel i7-6700HQ)
 
 | Area size |       Walls blocking flood | Mode |          Average execution time |
 |--------- |--------------------- |-------------- |--------------:|
