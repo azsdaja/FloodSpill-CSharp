@@ -12,7 +12,7 @@
     <Copyright />
     <RepositoryUrl>https://github.com/azsdaja/FloodSpill-CSharp</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>flood-fill flood-filling flood fill filling floodfill scanline grid roguelike</PackageTags>
+    <PackageTags>flood-fill flood-filling flood fill filling floodfill scanline grid roguelike dijkstra</PackageTags>
     <PackageIconUrl>https://github.com/azsdaja/FloodSpill-CSharp/blob/master/icon.png?raw=true</PackageIconUrl>
     <PackageReleaseNotes>First complete release.</PackageReleaseNotes>
     <PackageId>FloodSpiller</PackageId>
