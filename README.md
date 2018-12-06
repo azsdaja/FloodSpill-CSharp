@@ -8,11 +8,10 @@
 * pass your own **callbacks** that will be executed for visited positions,
 * use **LIFO, FIFO or priority queue** for deciding in what order positions should be processed,
 * decide if you allow **diagonal neighbourhood** of positions or not,
-* use **scanline fill** to **double up execution speed**,
-* reuse position queue and the matrix used for marking visited positions to **minimize memory allocation**.
+* use **scanline fill** to **double up execution speed**.
 
 ### It is:
-* fast,
+* fast and memory efficient,
 * easy to use,
 * elastic,
 * compatible with .NET Standard 2.0 and .NET Framework 3.5.
