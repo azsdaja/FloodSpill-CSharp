@@ -57,12 +57,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NeighbourProcessors\AddToListPositionProcessorTests.cs" />
-    <Compile Include="CommonFloodSpillerPerformanceTests.cs" />
     <Compile Include="CommonFloodSpillerTests.cs" />
     <Compile Include="PositionVisitors\AddToListPositionVisitorTests.cs" />
     <Compile Include="NeighbourProcessors\FindHighestMarkNeighbourProcessorTests.cs" />
     <Compile Include="FloodScanlineSpillerTests.cs" />
     <Compile Include="FloodSpillerTests.cs" />
+    <Compile Include="Examples.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

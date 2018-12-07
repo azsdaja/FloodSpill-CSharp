@@ -42,9 +42,8 @@ namespace FloodSpill.Tests
 		}
 
 		[TestCaseSource(nameof(AllSpillers))]
-		public void SpillFlood_BoundsDoNotContainStartingPosition_ThrowsArgumentException(FloodSpiller floodSpiller)
+		public void SpillFlood_ExplicitBoundsDoNotContainStartingPosition_ThrowsArgumentException(FloodSpiller floodSpiller)
 		{
-			// arrange
 			var startingPoint = new Position(5, 5);
 			var bounds = new FloodBounds(2, 2, 2, 2);
 
@@ -64,13 +63,12 @@ namespace FloodSpill.Tests
 		[TestCaseSource(nameof(AllSpillers))]
 		public void SpillFlood_NoBoundsAndStartingPositionIsOutOfMarkMatrix_ThrowsArgumentException(FloodSpiller floodSpiller)
 		{
-			int[,] markMatrix = new int[5, 5]; // max x and y is 4
 			var startingPoint = new Position(5, 4);
+			int[,] markMatrix = new int[5, 5];
+
 			Action action = () =>
 			{
-				var parameters = new FloodParameters(startingPoint.X, startingPoint.Y)
-				{
-				};
+				var parameters = new FloodParameters(startingPoint.X, startingPoint.Y);
 				floodSpiller.SpillFlood(parameters, markMatrix);
 			};
 
@@ -80,65 +78,51 @@ namespace FloodSpill.Tests
 		/// <summary>
 		/// Case description:
 		/// 
-		///	####    
-		/// #..#	  # - wall
-		/// #..#      . - walkable, marked
-		/// #0.#	  0, 1, 2, 3 - walkable, indicating marking number
+		///	    
+		/// ####	  # - unreachable
+		/// #..#      . - reachable, should be marked with some number
+		/// #..#	  
 		/// ####	  bottom-left corner position is 0,0
 		/// 
 		/// </summary>
 		[TestCaseSource(nameof(AllSpillers))]
-		public void SpillFlood_CorrectlyPerformsInClosedArea(FloodSpiller floodSpiller)
+		public void SpillFlood_CorrectMarksAppearAtWalkablePositions(FloodSpiller floodSpiller)
 		{
-			var result = new int[4, 5];
+			int size = 4;
+			var result = new int[size, size];
 			var startPosition = new Position(1, 1);
-			Predicate<int, int> qualifierMatchingMiddlePositions = (x, y) => x >= 1 && x <= 2 && y >= 1 && y <= 3;
+			Predicate<int, int> isAtPerimeter = (x, y) => x == 0 || x == size - 1 || y == 0 || y == size - 1;
+			Predicate<int, int> qualifier = (x, y) => !isAtPerimeter(x, y);
 
 			var parameters = new FloodParameters(new LifoPositionQueue(), startPosition.X, startPosition.Y)
 			{
-				Qualifier = qualifierMatchingMiddlePositions
+				Qualifier = qualifier
 			};
 			floodSpiller.SpillFlood(parameters, result);
 
-			result[0, 0].Should().Be(Int32.MaxValue);
-			result[1, 0].Should().Be(Int32.MaxValue);
-			result[2, 0].Should().Be(Int32.MaxValue);
-			result[3, 0].Should().Be(Int32.MaxValue);
-
-			result[0, 1].Should().Be(Int32.MaxValue);
-			result[3, 1].Should().Be(Int32.MaxValue);
-
-			result[0, 2].Should().Be(Int32.MaxValue);
-			result[3, 2].Should().Be(Int32.MaxValue);
-
-			result[0, 3].Should().Be(Int32.MaxValue);
-			result[3, 3].Should().Be(Int32.MaxValue);
-
-			result[0, 4].Should().Be(Int32.MaxValue);
-			result[1, 4].Should().Be(Int32.MaxValue);
-			result[2, 4].Should().Be(Int32.MaxValue);
-			result[3, 4].Should().Be(Int32.MaxValue);
-
-			result[1, 1].Should().Be(0);
-			result[2, 1].Should().BeLessThan(Int32.MaxValue);
-			result[1, 2].Should().BeLessThan(Int32.MaxValue);
-			result[2, 2].Should().BeLessThan(Int32.MaxValue);
-			result[1, 3].Should().BeLessThan(Int32.MaxValue);
-			result[2, 3].Should().BeLessThan(Int32.MaxValue);
+			for (int x = 0; x < result.GetLength(0); x++)
+			{
+				for (int y = 0; y < result.GetLength(1); y++)
+				{
+					if (isAtPerimeter(x, y))
+						result[x, y].Should().Be(int.MaxValue);
+					else result[x, y].Should().BeLessThan(int.MaxValue);
+				}
+			}
 		}
 
 		/// <summary>
 		/// Case description:
 		/// 
-		///	x#X#    
-		/// #x#X	  # - walkable, unreachable because is not satisfying given qualifier
-		/// x#X#      X - walkable, unreached
-		/// #0#x	  0, indicating marking number
-		/// x#X#	  bottom-left corner position is 0,0
+		///	    
+		/// 	  # - wall
+		/// X#X   X - empty space, but unreached
+		/// #0#	  0 - reached, indicating marking number
+		/// X#X	  bottom-left corner position is 0,0
 		/// 
 		/// </summary>
 		[TestCaseSource(nameof(AllSpillers))]
-		public void SpillFlood_CheckboardAndUsingFourDirectionsNeighbourHood_PositionsReachableByDiagonalsDoNotGetMarked(FloodSpiller floodSpiller)
+		public void SpillFlood_FourDirectionsNeighbourhood_PositionsAdjacentByDiagonalsDoNotGetMarked(FloodSpiller floodSpiller)
 		{
 			var result = new int[4, 5];
 			var startPosition = new Position(1, 1);
@@ -151,30 +135,29 @@ namespace FloodSpill.Tests
 			};
 			floodSpiller.SpillFlood(parameters, result);
 
+			result[0, 0].Should().Be(int.MaxValue);
+			result[1, 0].Should().Be(int.MaxValue);
+			result[2, 0].Should().Be(int.MaxValue);
+			result[0, 1].Should().Be(int.MaxValue);
 			result[1, 1].Should().Be(0);
-
-			for (int x = 0; x < result.GetLength(0); x++)
-			{
-				for (int y = 0; y < result.GetLength(1); y++)
-				{
-					if (x != 1 && y != 1)
-						result[x, y].Should().Be(Int32.MaxValue);
-				}
-			}
+			result[2, 1].Should().Be(int.MaxValue);
+			result[0, 2].Should().Be(int.MaxValue);
+			result[1, 2].Should().Be(int.MaxValue);
+			result[2, 2].Should().Be(int.MaxValue);
 		}
 
 		/// <summary>
 		/// Case description:
 		/// 
-		///	.#.#    
-		/// #.#.	  # - wall
-		/// .#.#      . - walkable and marked
-		/// #0#.	  0 - walkable, indicating marking number
-		/// .#.#	  bottom-left corner position is 0,0
+		///	    
+		///       # - wall
+		/// 1#1   . - reachable and marked
+		/// #0#	  0, 1 - reachable, indicating marking number
+		/// 1#1	  bottom-left corner position is 0,0
 		/// 
 		/// </summary>
 		[TestCaseSource(nameof(AllSpillers))]
-		public void SpillFlood_CheckboardAndUsingEigthDirectionsNeighbourHood_AllNodesReachableByDiagonalsGetMarked(FloodSpiller floodSpiller)
+		public void SpillFlood_EigthDirectionsNeighbourHood_AllPositionsReachableByDiagonalsGetMarked(FloodSpiller floodSpiller)
 		{
 			var result = new int[4, 5];
 			var startPosition = new Position(1, 1);
@@ -188,18 +171,15 @@ namespace FloodSpill.Tests
 			};
 			floodSpiller.SpillFlood(parameters, result);
 
-			result[startPosition.X, startPosition.Y].Should().Be(0);
-			for (int x = 0; x < 4; x++)
-			{
-				for (int y = 0; y < 5; y++)
-				{
-					bool checkboardWalkable = (x + y)%2 == 0;
-					if (checkboardWalkable)
-						result[x, y].Should().BeLessThan(Int32.MaxValue);
-					else
-						result[x, y].Should().Be(Int32.MaxValue);
-				}
-			}
+			result[0, 0].Should().Be(1);
+			result[1, 0].Should().Be(int.MaxValue);
+			result[2, 0].Should().Be(1);
+			result[0, 1].Should().Be(int.MaxValue);
+			result[1, 1].Should().Be(0);
+			result[2, 1].Should().Be(int.MaxValue);
+			result[0, 2].Should().Be(1);
+			result[1, 2].Should().Be(int.MaxValue);
+			result[2, 2].Should().Be(1);
 		}
 
 		[TestCaseSource(nameof(AllSpillers))]
@@ -261,7 +241,7 @@ namespace FloodSpill.Tests
 		/// 
 		/// </summary>
 		[TestCaseSource(nameof(AllSpillers))]
-		public void SpillFlood_BoundsDoNotStartFromZero_ReturnsCorrectResultRespectingBounds(FloodSpiller floodSpiller)
+		public void SpillFlood_BoundsDoNotStartFromZero_GivesCorrectMarksRespectingBounds(FloodSpiller floodSpiller)
 		{
 			// arrange
 			int resultArraySize = 4;
@@ -295,7 +275,7 @@ namespace FloodSpill.Tests
 		/// ...	  bottom-left corner is 0,0
 		/// </summary>
 		[TestCaseSource(nameof(AllSpillers))]
-		public void SpillFlood_FirstVisitedPositionMeetsStopCondition_AlgorithmStopsBeforeEvenSpreadingToNeighbours(FloodSpiller spiller)
+		public void SpillFlood_FirstVisitedPositionMeetsStopCondition_AlgorithmStopsBeforeSpreadingToNeighbours(FloodSpiller spiller)
 		{
 			// arrange
 			var startingPosition = new Position(1, 1);
@@ -373,6 +353,7 @@ namespace FloodSpill.Tests
 			};
 			bool wasStopped = spiller.SpillFlood(parameters, result);
 
+			// assert
 			wasStopped.Should().BeTrue();
 			visitedPositionsCount.Should().Be(1); // only starting position should be visited
 												  // assert that reached positions got correct numbers
@@ -390,7 +371,7 @@ namespace FloodSpill.Tests
 		/// 
 		/// </summary>
 		[TestCaseSource(nameof(AllSpillers))]
-		public void SpillFlood_FloodDoesNotReachPositionsThatAreValidButBlockedByUnReachablePositions(FloodSpiller spiller)
+		public void SpillFlood_FloodDoesNotReachPositionsThatAreValidButBlockedByUnreachablePositions(FloodSpiller spiller)
 		{
 			float seaLevel = 0.5f;
 			var heights = new float[4, 4];
@@ -416,12 +397,12 @@ namespace FloodSpill.Tests
 				heights[positionAbove.X, positionAbove.Y] = 1f;
 			}
 
-			Predicate<int, int> potentialSeaQualifier = (x, y) => heights[x, y] < seaLevel;
+			Predicate<int, int> isBelowSeaLevel = (x, y) => heights[x, y] < seaLevel;
 
 			var result = new int[4, 4];
 			var parameters = new FloodParameters(0, 0)
 			{
-				Qualifier = potentialSeaQualifier
+				Qualifier = isBelowSeaLevel
 			};
 			spiller.SpillFlood(parameters, result);
 
@@ -437,19 +418,17 @@ namespace FloodSpill.Tests
 			result[2, 2].Should().Be(int.MaxValue); // above threshold
 			result[3, 1].Should().Be(int.MaxValue); // under threshold, unreachable
 		}
-
-
-		[Test]
+		
+		[Test] 
 		public void FloodSpillerAndFloodScanlineSpiller_BigAreaWithSomeUnwalkableRegions_BothSpillersMarkSamePositions()
 		{
 			// arrange
 
 			int size = 200;
-			Console.WriteLine("size: " + size);
 			var resultForScanline = new int[size, size];
 			var resultForNormal = new int[size, size];
 
-			var startPosition = new Position((int)(size / 2), size / 2); // somewhere around the middle
+			var startPosition = new Position(size / 2, size / 2);
 
 			var walkability = new bool[size, size];
 			int walkableCount = 0;
@@ -476,20 +455,19 @@ namespace FloodSpill.Tests
 					++walkableCount;
 				}
 			}
-						walkability[startPosition.X, startPosition.Y].Should().BeTrue("it's an initial requirement for test data");
-			Console.WriteLine("Walkability ratio: " + ((float)walkableCount) / (size * size));
+			walkability[startPosition.X, startPosition.Y].Should().BeTrue("it's an initial requirement for test data");
+			//Console.WriteLine("Walkability ratio: " + ((float)walkableCount) / (size * size));
 			Predicate<int, int> qualifier = (x, y) => walkability[x, y];
 			var parameters = new FloodParameters(new FifoPositionQueue(), startPosition.X, startPosition.Y)
 			{
 				Qualifier = qualifier,
-				NeighbourhoodType = NeighbourhoodType.Four
 			};
 
 			// act
 			new FloodScanlineSpiller().SpillFlood(parameters, resultForScanline);
 			new FloodSpiller().SpillFlood(parameters, resultForNormal);
 
-			// assert
+			// assert that results are same
 			for (int x = 0; x < size; x++)
 			{
 				for (int y = 0; y < size; y++)

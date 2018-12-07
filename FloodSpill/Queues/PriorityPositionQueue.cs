@@ -19,6 +19,15 @@ namespace FloodSpill.Queues
 		{
 		}
 
+		/// <param name="intPairComparer">Comparer for two positions passed in function arguments: x1, y1, x2, y2.</param>
+		public PriorityPositionQueue(Func<int, int, int, int, int> intPairComparer)
+		{
+			Func<Position, Position, int> positionComparerFunction =
+				(first, second) => intPairComparer(first.X, first.Y, second.X, second.Y);
+			var positionComparer = new FunctionalComparer<Position>(positionComparerFunction);
+			_intervalHeap = new IntervalHeap<Position>(positionComparer);
+		}
+
 		public override bool Any()
 		{
 			return _intervalHeap.Count > 0; // note: using _intervalHeap.Any() would cause an allocation of new IntervalHeap.Enumerator each time!

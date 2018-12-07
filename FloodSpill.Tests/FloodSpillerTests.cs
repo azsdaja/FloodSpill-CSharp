@@ -20,7 +20,7 @@ namespace FloodSpill.Tests
 		/// 
 		/// </summary>
 		[Test]
-		public void SpillFlood_Neighbourhood4_ReturnsCorrectResultArray()
+		public void SpillFlood_NoDiagonalNeighbourhood_ReturnsCorrectResultArray()
 		{
 			// arrange
 			int size = 4;
@@ -78,7 +78,7 @@ namespace FloodSpill.Tests
 		/// 
 		/// </summary>
 		[Test]
-		public void SpillFlood_Neighbourhood8_ReturnsCorrectResultArray()
+		public void SpillFlood_DiagonalNeighbourhoodAllowed_ReturnsCorrectResultArray()
 		{
 			// arrange
 			int size = 4;
@@ -120,6 +120,7 @@ namespace FloodSpill.Tests
 
 			result[0, 2].Should().Be(int.MaxValue);
 			result[1, 2].Should().Be(int.MaxValue);
+
 			result[3, 2].Should().Be(int.MaxValue);
 
 			result[0, 3].Should().Be(int.MaxValue);
@@ -129,21 +130,67 @@ namespace FloodSpill.Tests
 
 		/// <summary>
 		/// "Lake" should be created by joining positions with smallest height among positions adjacent to our current lake.
-		/// Stop condition is met when next position we pick has smaller height than highest position until now 
+		/// Stop condition is met when next position we pick has smaller height than the highest position until now 
 		/// (because when water starts to go down, it becomes a river).
 		/// </summary>
-		[Test]
+		[Test] 
 		public void FloodSpill_LakeSituationWithPriorityQueue_CorrectlySpillsLake()
 		{
-			var heightMap = new float[5,6];
 			string heightInput = "98999" + Environment.NewLine + //.....	   
-						         "95799" + Environment.NewLine + //.l...	   l - lake
-  /*we start at 2 in this line*/ "92789" + Environment.NewLine + //.l...	   . - land
-						         "93499" + Environment.NewLine + //.ll..	   
+						         "95799" + Environment.NewLine + //.l...	   l - expected lake
+/*start position is at 2 --> */  "92789" + Environment.NewLine + //.l...	   . - expected land
+								 "93499" + Environment.NewLine + //.ll..	   
 						         "96999" + Environment.NewLine + //.l...	   
 						         "94999";                        //.L...       L - last lake position which will become a new river
 						      								     //		       bottom-left corner is 0,0
-			string[] inputLines = heightInput.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+																 // water should spill to lowest positions adjacent to flood: 2, 3, 4, 5, 6, 4
+			float[,] heightMap = CreateHeightMapFromString(heightInput);
+
+			var markMatrix = new int[5,6];
+			Position startingPosition = new Position(1, 3);
+
+			float lakeSurfaceHeight = heightMap[startingPosition.X, startingPosition.Y];
+			Predicate<int, int> stopConditionForVisited = (x, y) => heightMap[x, y] < lakeSurfaceHeight;
+			var lakePositions = new List<Position>();
+			Action<int, int> positionVisitorWithSurfaceAdjustmentAndListBuilding = (currentX, currentY) =>
+			{
+				float positionHeight = heightMap[currentX, currentY];
+				if (positionHeight > lakeSurfaceHeight)
+					lakeSurfaceHeight = positionHeight;
+
+				lakePositions.Add(new Position(currentX, currentY));
+			};
+
+			Func<Position, Position, int> positionComparerByHeight =
+				(first, second) => heightMap[first.X, first.Y].CompareTo(heightMap[second.X, second.Y]);
+
+			var parameters = new FloodParameters(new PriorityPositionQueue(positionComparerByHeight), startingPosition.X, startingPosition.Y)
+			{
+				SpreadingPositionVisitor = positionVisitorWithSurfaceAdjustmentAndListBuilding,
+				SpreadingPositionStopCondition = stopConditionForVisited
+			};
+
+			// act
+			new FloodSpiller().SpillFlood(parameters, markMatrix);
+
+			// assert lakePositions are calculated correctly and have proper marks
+			Position[] expectedLakePositions =
+			{
+				new Position(1,0),
+				new Position(1,1),
+				new Position(1,2),
+				new Position(2,2),
+				new Position(1,3),
+				new Position(1,4),
+			};
+			lakePositions.Should().BeEquivalentTo(expectedLakePositions);
+			Console.WriteLine(MarkMatrixVisualiser.Visualise(markMatrix));
+		}
+
+		private static float[,] CreateHeightMapFromString(string heightInput)
+		{
+			var heightMap = new float[5,6];
+			string[] inputLines = heightInput.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
 			for (int x = 0; x < inputLines[0].Length; x++)
 			{
 				for (int y = 0; y < inputLines.Length; y++)
@@ -153,50 +200,7 @@ namespace FloodSpill.Tests
 				}
 			}
 
-			var markMatrix = new int[5,6];
-			Predicate<int, int> qualifier = (x, y) => true; // there are no other constraints apart from stop condition
-			Position startingPosition = new Position(1, 3);
-
-			float lakeSurfaceHeight = heightMap[startingPosition.X, startingPosition.Y];
-			Predicate<int, int> stopConditionForCurrent = (x, y) => heightMap[x, y] < lakeSurfaceHeight;
-			var lakePositions = new List<Position>();
-			Action<int, int> processCurrent = (currentX, currentY) =>
-			{
-				float positionHeight = heightMap[currentX, currentY];
-				if (positionHeight > lakeSurfaceHeight)
-					lakeSurfaceHeight = positionHeight;
-
-				lakePositions.Add(new Position(currentX, currentY));
-			};
-
-			Func<Position, Position, int> comparer =
-				(first, second) => heightMap[first.X, first.Y].CompareTo(heightMap[second.X, second.Y]);
-
-			var parameters = new FloodParameters(new PriorityPositionQueue(comparer), startingPosition.X, startingPosition.Y)
-			{
-				Qualifier = qualifier,
-				SpreadingPositionVisitor = processCurrent,
-				SpreadingPositionStopCondition = stopConditionForCurrent
-			};
-
-			// act
-			new FloodSpiller().SpillFlood(parameters, markMatrix);
-
-			// assert lakePositions are calculated correctly and have proper marks
-			Position[] expectedLakePositions =
-{
-				new Position(1,0),
-				new Position(1,1),
-				new Position(1,2),
-				new Position(2,2),
-				new Position(1,3),
-				new Position(1,4),
-			};
-			foreach (Position expectedLakePosition in expectedLakePositions)
-			{
-				markMatrix[expectedLakePosition.X, expectedLakePosition.Y].Should().BeLessThan(int.MaxValue);
-			}
-			lakePositions.Should().BeEquivalentTo(expectedLakePositions);
+			return heightMap;
 		}
 
 		[Test]

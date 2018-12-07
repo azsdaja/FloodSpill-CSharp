@@ -2,10 +2,9 @@
 using System.Diagnostics;
 using FloodSpill.Queues;
 using FloodSpill.Utilities;
-using FluentAssertions;
 using NUnit.Framework;
 
-namespace FloodSpill.Tests
+namespace FloodSpill.Benchmarks
 {
 	[TestFixture]
 	public class CommonFloodSpillerPerformanceTests
@@ -165,7 +164,7 @@ namespace FloodSpill.Tests
 				}
 			}
 
-			walkability[startPosition.X, startPosition.Y].Should().BeTrue("it's an initial requirement for test data");
+			Assert.True(walkability[startPosition.X, startPosition.Y], "it's an initial requirement for test data");
 			Console.WriteLine("Walkability ratio: " + ((float)walkableCount) / (size * size));
 			Predicate<int, int> qualifier = (x, y) => walkability[x, y];
 
