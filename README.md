@@ -65,7 +65,7 @@ public void BucketFillImage(int floodStartX, int floodStartY, Color replacedColo
 }
 ```
 
-**For more instructions and code examples see [**Getting started**](https://github.com/azsdaja/FloodSpill-CSharp/wiki/Getting-started) section in wiki.**
+**For more instructions and code examples see [**Getting started**](https://github.com/azsdaja/FloodSpill-CSharp/wiki/Home) section in wiki.**
 
 ---
 
