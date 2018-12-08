@@ -405,6 +405,7 @@ namespace FloodSpill.Tests
 				Qualifier = isBelowSeaLevel
 			};
 			spiller.SpillFlood(parameters, result);
+			Console.WriteLine(MarkMatrixVisualiser.Visualise(result));
 
 			result[0, 0].Should().Be(0); // starting position
 			result[1, 0].Should().BeLessThan(int.MaxValue);
@@ -427,6 +428,7 @@ namespace FloodSpill.Tests
 			int size = 200;
 			var resultForScanline = new int[size, size];
 			var resultForNormal = new int[size, size];
+			var resultForFastScanline = new int[size, size];
 
 			var startPosition = new Position(size / 2, size / 2);
 
@@ -464,6 +466,7 @@ namespace FloodSpill.Tests
 			};
 
 			// act
+			new FloodScanlineSpiller().SpillFlood(parameters, resultForFastScanline);
 			new FloodScanlineSpiller().SpillFlood(parameters, resultForScanline);
 			new FloodSpiller().SpillFlood(parameters, resultForNormal);
 
@@ -473,6 +476,7 @@ namespace FloodSpill.Tests
 				for (int y = 0; y < size; y++)
 				{
 					(resultForScanline[x, y] == int.MaxValue).Should().Be(resultForNormal[x, y] == int.MaxValue);
+					(resultForScanline[x, y] == int.MaxValue).Should().Be(resultForFastScanline[x, y] == int.MaxValue);
 				}
 			}
 		}
