@@ -174,14 +174,23 @@ namespace FloodSpill.Benchmarks
 				NeighbourhoodType = NeighbourhoodType.Four
 			};
 
+			Console.WriteLine("time:");
+
 			var stopwatch = Stopwatch.StartNew();
-			new FloodScanlineSpiller().SpillFlood(parameters, resultForScanline);
-			Console.WriteLine("scanline:" + stopwatch.ElapsedMilliseconds);
+			var normal = new FloodSpiller();
+			for (int i = 0; i < 5; i++)
+			{
+				normal.SpillFlood(parameters, resultForNormal);
+			}
+			Console.WriteLine("normal------------:" + stopwatch.ElapsedMilliseconds);
 
 			stopwatch.Restart();
-			new FloodSpiller().SpillFlood(parameters, resultForNormal);
-			Console.WriteLine("normal:" + stopwatch.ElapsedMilliseconds);
+			var scanline = new FloodScanlineSpiller();
+			for (int i = 0; i < 5; i++)
+			{
+				scanline.SpillFlood(parameters, resultForScanline);
+			}
+			Console.WriteLine("scanline------------:" + stopwatch.ElapsedMilliseconds);
 		}
-
 	}
 }

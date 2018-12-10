@@ -3,8 +3,7 @@ using FloodSpill.Queues;
 
 namespace FloodSpill.Benchmarks
 {
-	[ShortRunJob, MarkdownExporter, AsciiDocExporter, HtmlExporter, CsvExporter, RPlotExporter, RankColumn, MemoryDiagnoser
-	]
+	[ShortRunJob, MarkdownExporter, AsciiDocExporter, HtmlExporter, CsvExporter, RPlotExporter, RankColumn, MemoryDiagnoser]
 	public class QueuesBenchmarks
 	{
 		private int[] _toAddX;

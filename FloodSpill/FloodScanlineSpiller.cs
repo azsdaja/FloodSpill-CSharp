@@ -1,3 +1,5 @@
+﻿using System.Runtime.CompilerServices;
+
 namespace FloodSpill
 {
 	/// <summary>
@@ -20,79 +22,73 @@ namespace FloodSpill
 			{
 				lineMaxY += 1;
 			}
-
 			// now lineMinY and lineMaxY define the longest vertical line containing current position 
 			// which contains positions that are valid to process.
 
-			// todo: maybe would be faster if wouldn't separate checking and processing
 			return ProcessNeighboursAlongLine(lineMinY, lineMaxY, currentX, currentY, markToGive);
 		}
 
 		/// <summary>
-		/// Moves along given vertical line and marks all positions on its way. Validity check is not needed as the line is supposed to contain
-		/// positions that are valid. However, we also check left and right neighbours of positions on the line and if they start a new
-		/// streak of valid positions, we add them to the queue.
+		/// Moves along given vertical line and marks all positions on its way. Validity check for main line is not needed because it 
+		/// it was already performed in SpreadToNeighbours(). However, we check left and right neighbours of positions on the line 
+		/// and if they start a new streak of valid positions, we add them to the queue.
 		/// </summary>
+		/// <remarks>Performance notes: joining together the operations of checking conditions in SpreadToNeighbours 
+		/// and processing in here doesn't help much. Neither is getting rid of "yInLine != parentY" condigtion by using 
+		/// two loops instead of one. Also it doesn't make it faster to avoid unnecessary checks for bounds-related conditions.</remarks>
 		private bool ProcessNeighboursAlongLine(int lineBeginningY, int lineEndY, int parentX, int parentY, int markToGive)
 		{
 			bool stopConditionMet = false;
-			int lineX = parentX;
-			bool leftStreak = false, rightStreak = false;
-
+			int mainLineX = parentX;
+			int leftLineX = mainLineX - 1;
+			int rightLineX = mainLineX + 1;
+			bool leftStreakActive = false, rightStreakActive = false;
 			bool includeDiagonalDirections = NeighbourhoodType == NeighbourhoodType.Eight;
+
 			if (includeDiagonalDirections)
 			{
-				stopConditionMet |= ProcessSides(markToGive, lineX, lineBeginningY - 1, ref leftStreak, ref rightStreak);
+				stopConditionMet |= CheckStreakAndProcessSide(markToGive, leftLineX, lineBeginningY - 1, ref leftStreakActive);
+				stopConditionMet |= CheckStreakAndProcessSide(markToGive, rightLineX, lineBeginningY - 1, ref rightStreakActive);
 			}
+
 			for (int yInLine = lineBeginningY; yInLine <= lineEndY; yInLine++)
 			{
 				if (yInLine != parentY) // if we are at parent (which has already been processed) we skip processing
 				{
 					// it is the essence of scanline fill to skip enqueueing positions on the line we move along
-					stopConditionMet |= ProcessNeighbour(lineX, yInLine, markToGive, shouldEnqueue: false);
+					stopConditionMet |= ProcessNeighbour(mainLineX, yInLine, markToGive, shouldEnqueue: false);
 				}
 
-				stopConditionMet |= ProcessSides(markToGive, lineX, yInLine, ref leftStreak, ref rightStreak);
+				stopConditionMet |= CheckStreakAndProcessSide(markToGive, leftLineX, yInLine, ref leftStreakActive);
+				stopConditionMet |= CheckStreakAndProcessSide(markToGive, rightLineX, yInLine, ref rightStreakActive);
 			}
+
 			if (includeDiagonalDirections)
 			{
-				stopConditionMet |= ProcessSides(markToGive, lineX, lineEndY + 1, ref leftStreak, ref rightStreak);
+				stopConditionMet |= CheckStreakAndProcessSide(markToGive, leftLineX, lineEndY + 1, ref leftStreakActive);
+				stopConditionMet |= CheckStreakAndProcessSide(markToGive, rightLineX, lineEndY + 1, ref rightStreakActive);
 			}
+
 			return stopConditionMet;
 		}
 
-		private bool ProcessSides(int markToGive, int lineX, int yInLine, ref bool leftStreak, ref bool rightStreak)
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private bool CheckStreakAndProcessSide(int markToGive, int sideLineX, int yInLine, ref bool streakActive)
 		{
 			bool stopConditionMet = false;
 
-			int leftNeighbourX = lineX - 1;
-			if (!leftStreak)
+			if (!streakActive)
 			{
-				if (IsValidPosition(leftNeighbourX, yInLine))
+				if (IsValidPosition(sideLineX, yInLine))
 				{
-					stopConditionMet |= ProcessNeighbour(leftNeighbourX, yInLine, markToGive);
-					leftStreak = true;
+					stopConditionMet |= ProcessNeighbour(sideLineX, yInLine, markToGive);
+					streakActive = true;
 				}
 			}
 			else
 			{
-				if (!IsValidPosition(leftNeighbourX, yInLine))
-					leftStreak = false;
-			}
-
-			int rightNeighbourX = lineX + 1;
-			if (!rightStreak)
-			{
-				if (IsValidPosition(rightNeighbourX, yInLine))
-				{
-					stopConditionMet |= ProcessNeighbour(rightNeighbourX, yInLine, markToGive);
-					rightStreak = true;
-				}
-			}
-			else
-			{
-				if (!IsValidPosition(rightNeighbourX, yInLine))
-					rightStreak = false;
+				if (!IsValidPosition(sideLineX, yInLine))
+					streakActive = false;
 			}
 
 			return stopConditionMet;

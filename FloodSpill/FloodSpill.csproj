@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard1.6</TargetFramework>
     <FileUpgradeFlags>40</FileUpgradeFlags>
     <OldToolsVersion>15.0</OldToolsVersion>
     <UpgradeBackupLocation>D:\Projekty\FloodSpiller-CSharp\Backup2\</UpgradeBackupLocation>
@@ -16,7 +16,7 @@
     <PackageIconUrl>https://github.com/azsdaja/FloodSpill-CSharp/blob/master/icon.png?raw=true</PackageIconUrl>
     <PackageReleaseNotes>First complete release.</PackageReleaseNotes>
     <PackageId>FloodSpiller</PackageId>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="C5" Version="2.5.3" />

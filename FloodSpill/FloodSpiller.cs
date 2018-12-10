@@ -1,6 +1,7 @@
-﻿using System;
-using FloodSpill.Queues;
+﻿using FloodSpill.Queues;
 using FloodSpill.Utilities;
+using System;
+using System.Runtime.CompilerServices;
 
 namespace FloodSpill
 {
@@ -36,8 +37,7 @@ namespace FloodSpill
 		/// Neighbours are marked with numbers bigger by 1 than mark numbers of VISITED POSITION they are reached from.<br/>
 		/// </summary>
 		/// 
-		/// <remarks>Before running the main loop we process the starting position as if it was a NEIGHBOUR being PROCESSED.<br/>
-		/// Note that positions are marked before actually processing them, so if the algorithm stops with positions waiting in queue,
+		/// <remarks>Note that positions are marked before actually processing them, so if the algorithm stops with positions waiting in queue,
 		/// they will be remain marked even though they haven't been processed yet.</remarks>
 		/// 
 		/// <param name="markMatrix">A matrix that will be initialized with int.MaxValues and then used for storing positions marks. </param>
@@ -96,7 +96,7 @@ namespace FloodSpill
 				{
 					MarkMatrix[x, y] = int.MaxValue;
 				}
-			}
+			} // takes ~5 ms for 2000x2000
 		}
 
 		/// <summary>
@@ -198,14 +198,16 @@ namespace FloodSpill
 		}
 
 		/// <returns>True if the position is within given bounds, it hasn't been marked yet and it satisifies the qualifier.</returns>
-		protected bool IsValidPosition(int neighbourX, int neighbourY)
+		// [MethodImpl(MethodImplOptions.AggressiveInlining)] doesn't seem to help
+		protected bool IsValidPosition(int x, int y)
 		{
-			return neighbourX >= MinX && neighbourX <= MaxX && neighbourY >= MinY && neighbourY <= MaxY
-			       && GetMark(neighbourX, neighbourY) == int.MaxValue
-			       && (Qualifier == null || Qualifier(neighbourX, neighbourY));
+			return x >= MinX && x <= MaxX && y >= MinY && y <= MaxY
+			       && GetMark(x, y) == int.MaxValue
+			       && (Qualifier == null || Qualifier(x, y));
 		}
 
 		/// <returns>True if the stop condition was met. Otherwise false.</returns>
+		// [MethodImpl(MethodImplOptions.AggressiveInlining)] doesn't seem to help
 		protected bool ProcessNeighbour(int neighbourX, int neighbourY, int markToGive, bool shouldEnqueue = true)
 		{
 			SetMark(neighbourX, neighbourY, markToGive);
@@ -221,6 +223,7 @@ namespace FloodSpill
 		/// <summary>
 		/// Sets given position in MarkMatrix to given mark.
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected void SetMark(int x, int y, int mark)
 		{
 			MarkMatrix[x + OffsetX, y + OffsetY] = mark;
@@ -229,6 +232,7 @@ namespace FloodSpill
 		/// <summary>
 		/// Gets mark for given position in MarkMatrix. 
 		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected int GetMark(int x, int y)
 		{
 			return MarkMatrix[x + OffsetX, y + OffsetY];

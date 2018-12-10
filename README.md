@@ -14,7 +14,7 @@
 * fast and memory efficient,
 * easy to use,
 * elastic,
-* compatible with .NET Standard 2.0 and .NET Framework 3.5.
+* compatible with .NET Standard 1.6+ and .NET Framework 3.5+.
 
 It can for example be used in games (roguelikes, RTS, RPG) to calculate so called **influence maps**, **scent maps**, **Dijkstra maps** et cætera.
 
@@ -72,24 +72,24 @@ public void BucketFillImage(int floodStartX, int floodStartY, Color replacedColo
 ### Performance report measured with [BenchmarkDotNet](https://benchmarkdotnet.org)
 (with checking for wall presence by accessing a bool[,] matrix; measured on a good 2016 laptop with Intel i7-6700HQ)
 
-| Area size |       Walls blocking flood | Mode |          Average execution time |
-|--------- |--------------------- |-------------- |--------------:|
-|       **20x20** |                 **No walls (open area)** |         **Normal** |      **32 µs** |
-|       **20x20** |                 **No walls (open area)** |          **Scanline** |      **14 µs** |
-|       **20x20** | **Sparse pillars (11% of area)** |         **Normal** |      **31 µs** |
-|       **20x20** | **Sparse pillars (11% of area)** |          **Scanline** |      **25 µs** |
-|       **20x20** | **Circular walls (50% of area)** |         **Normal** |      **19 µs** |
-|       **20x20** | **Circular walls (50% of area)** |          **Scanline** |      **11 µs** |
-|      **200x200** |                 **No walls (open area)** |         **Normal** |   **3,222 µs** |
-|      **200x200** |                 **No walls (open area)** |          **Scanline** |   **1,249 µs** |
-|      **200x200** | **Sparse pillars (11% of area)** |         **Normal** |   **2,868 µs** | 
-|      **200x200** | **Sparse pillars (11% of area)** |          **Scanline** |   **2,624 µs** |
-|      **200x200** | **Circular walls (50% of area)** |         **Normal** |   **1,877 µs** |
-|      **200x200** | **Circular walls (50% of area)** |          **Scanline** |     **947 µs** |
-|     **2000x2000** |                 **No walls (open area)** |         **Normal** | **355,445 µs** |
-|     **2000x2000** |                 **No walls (open area)** |          **Scanline** | **124,329 µs** |
-|     **2000x2000** | **Sparse pillars (11% of area)** |         **Normal** | **309,879 µs** |
-|     **2000x2000** | **Sparse pillars (11% of area)** |          **Scanline** | **267,670 µs** |
-|     **2000x2000** | **Circular walls (50% of area)** |         **Normal** | **204,312 µs** |
-|     **2000x2000** | **Circular walls (50% of area)** |          **Scanline** |  **92,618 µs** |
+| Area size |       Walls blocking flood | Mode |          Mean execution time |    Allocated memory |
+|--------- |--------------------- |-------------- |--------------:|--------------:|
+|       **20x20** |                 **No walls (open area)** |         **Normal** |      **33 µs** | < 1kB|
+|       **20x20** |                 **No walls (open area)** |          **Scanline** |      **15 µs** |  < 1kB|
+|       **20x20** | **Sparse pillars (11% of area)** |         **Normal** |      **33 µs** |  < 1kB |
+|       **20x20** | **Sparse pillars (11% of area)** |          **Scanline** |      **23 µs** |  < 1kB|
+|       **20x20** | **Circular walls (50% of area)** |         **Normal** |      **20 µs** |  < 1kB|
+|       **20x20** | **Circular walls (50% of area)** |          **Scanline** |      **10 µs** |  < 1kB|
+|      **200x200** |                 **No walls (open area)** |         **Normal** |   **3,458 µs** | 16 kB|
+|      **200x200** |                 **No walls (open area)** |          **Scanline** |   **1,158 µs** |  < 1kB|
+|      **200x200** | **Sparse pillars (11% of area)** |         **Normal** |   **3,072 µs** | 16 kB|
+|      **200x200** | **Sparse pillars (11% of area)** |          **Scanline** |   **2,430 µs** | 8 kB|
+|      **200x200** | **Circular walls (50% of area)** |         **Normal** |   **2,031 µs** | 8 kB|
+|      **200x200** | **Circular walls (50% of area)** |          **Scanline** |     **879 µs** |  < 1kB|
+|     **2000x2000** |                 **No walls (open area)** |         **Normal** | **371,000 µs** | 131 kB|
+|     **2000x2000** |                 **No walls (open area)** |          **Scanline** | **117,000 µs** | < 1kB|
+|     **2000x2000** | **Sparse pillars (11% of area)** |         **Normal** | **328,000 µs** | 131 kB|
+|     **2000x2000** | **Sparse pillars (11% of area)** |          **Scanline** | **262,670 µs** | 66 kB|
+|     **2000x2000** | **Circular walls (50% of area)** |         **Normal** | **216,312 µs** | 66 kB|
+|     **2000x2000** | **Circular walls (50% of area)** |          **Scanline** |  **88,618 µs** | 8 kB|
 
