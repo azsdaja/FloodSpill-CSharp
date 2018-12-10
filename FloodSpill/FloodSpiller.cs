@@ -1,7 +1,7 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using FloodSpill.Queues;
+﻿using FloodSpill.Queues;
 using FloodSpill.Utilities;
+using System;
+using System.Runtime.CompilerServices;
 
 namespace FloodSpill
 {
@@ -96,7 +96,7 @@ namespace FloodSpill
 				{
 					MarkMatrix[x, y] = int.MaxValue;
 				}
-			}
+			} // takes ~5 ms for 2000x2000
 		}
 
 		/// <summary>

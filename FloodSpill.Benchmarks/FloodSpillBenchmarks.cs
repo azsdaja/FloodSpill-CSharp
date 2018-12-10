@@ -1,11 +1,13 @@
 ﻿using System;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Diagnosers;
 using FloodSpill.Queues;
 using FloodSpill.Utilities;
 
 namespace FloodSpill.Benchmarks
 {
 	[ShortRunJob, MarkdownExporter, AsciiDocExporter, HtmlExporter, CsvExporter, RPlotExporter, RankColumn, MemoryDiagnoser]
+	[HardwareCounters(HardwareCounter.BranchMispredictions, HardwareCounter.BranchInstructions, HardwareCounter.CacheMisses)]
 	public class FloodSpillBenchmarks
 	{
 		public enum AreaType
@@ -55,7 +57,7 @@ namespace FloodSpill.Benchmarks
 				Qualifier = _qualifier,
 			};
 
-			_floodSpiller = UsingScanline ? new FloodScanlineSpiller() : new FloodSpiller();
+			_floodSpiller = UsingScanline ? (FloodSpiller) new FloodScanlineSpiller() : new FloodSpiller();
 		}
 
 		// when modifying, make sure to update RunFloodFill to start at non-wall position!

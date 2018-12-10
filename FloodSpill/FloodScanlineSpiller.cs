@@ -16,50 +16,59 @@ namespace FloodSpill
 			{
 				lineMinY -= 1;
 			}
-			
+
 			int lineMaxY = currentY;
 			while (IsValidPosition(currentX, lineMaxY + 1))
 			{
 				lineMaxY += 1;
 			}
-
 			// now lineMinY and lineMaxY define the longest vertical line containing current position 
 			// which contains positions that are valid to process.
 
-			return ProcessNeighboursAlongLine(currentX, currentY, lineMinY, lineMaxY, markToGive);
+			return ProcessNeighboursAlongLine(lineMinY, lineMaxY, currentX, currentY, markToGive);
 		}
 
 		/// <summary>
 		/// Moves along given vertical line and marks all positions on its way. Validity check for main line is not needed because it 
-		/// is supposed to contain positions that are valid. However, we check left and right neighbours of positions on the line 
+		/// it was already performed in SpreadToNeighbours(). However, we check left and right neighbours of positions on the line 
 		/// and if they start a new streak of valid positions, we add them to the queue.
 		/// </summary>
-		private bool ProcessNeighboursAlongLine(int parentX, int parentY, int lineMinY, int lineMaxY, int markToGive)
+		/// <remarks>Performance notes: joining together the operations of checking conditions in SpreadToNeighbours 
+		/// and processing in here doesn't help much. Neither is getting rid of "yInLine != parentY" condigtion by using 
+		/// two loops instead of one. Also it doesn't make it faster to avoid unnecessary checks for bounds-related conditions.</remarks>
+		private bool ProcessNeighboursAlongLine(int lineBeginningY, int lineEndY, int parentX, int parentY, int markToGive)
 		{
 			bool stopConditionMet = false;
 			int mainLineX = parentX;
-
-			// first we process neighbours on the main line. We omit yInLine equal to parentY, because it already has been processed before
-			for (int yInLine = lineMinY; yInLine < parentY; yInLine++)
-				if(IsValidPosition(mainLineX, yInLine))
-					stopConditionMet |= ProcessNeighbour(mainLineX, yInLine, markToGive, shouldEnqueue: false);
-			for (int yInLine = parentY + 1; yInLine <= lineMaxY; yInLine++)
-				if (IsValidPosition(mainLineX, yInLine))
-					stopConditionMet |= ProcessNeighbour(mainLineX, yInLine, markToGive, shouldEnqueue: false);
-
-			// now we'll follow the sidelines and process positions on them which start new streaks of valid positions
-
-			bool includeDiagonalDirections = NeighbourhoodType == NeighbourhoodType.Eight;
-			// if we want to include diagonal neighbourhood, we just need to check sides for a range bigger by 1 at both ends
-			int sideLineMinY = includeDiagonalDirections ? lineMinY - 1 : lineMinY;
-			int sideLineMaxY = includeDiagonalDirections ? lineMaxY + 1 : lineMaxY;
-
+			int leftLineX = mainLineX - 1;
+			int rightLineX = mainLineX + 1;
 			bool leftStreakActive = false, rightStreakActive = false;
-			for (int yInLine = sideLineMinY; yInLine <= sideLineMaxY; yInLine++)
-				stopConditionMet |= CheckStreakAndProcessSide(markToGive, mainLineX -1, yInLine, ref leftStreakActive);
-			for (int yInLine = sideLineMinY; yInLine <= sideLineMaxY; yInLine++)
-				stopConditionMet |= CheckStreakAndProcessSide(markToGive, mainLineX +1, yInLine, ref rightStreakActive);
-			
+			bool includeDiagonalDirections = NeighbourhoodType == NeighbourhoodType.Eight;
+
+			if (includeDiagonalDirections)
+			{
+				stopConditionMet |= CheckStreakAndProcessSide(markToGive, leftLineX, lineBeginningY - 1, ref leftStreakActive);
+				stopConditionMet |= CheckStreakAndProcessSide(markToGive, rightLineX, lineBeginningY - 1, ref rightStreakActive);
+			}
+
+			for (int yInLine = lineBeginningY; yInLine <= lineEndY; yInLine++)
+			{
+				if (yInLine != parentY) // if we are at parent (which has already been processed) we skip processing
+				{
+					// it is the essence of scanline fill to skip enqueueing positions on the line we move along
+					stopConditionMet |= ProcessNeighbour(mainLineX, yInLine, markToGive, shouldEnqueue: false);
+				}
+
+				stopConditionMet |= CheckStreakAndProcessSide(markToGive, leftLineX, yInLine, ref leftStreakActive);
+				stopConditionMet |= CheckStreakAndProcessSide(markToGive, rightLineX, yInLine, ref rightStreakActive);
+			}
+
+			if (includeDiagonalDirections)
+			{
+				stopConditionMet |= CheckStreakAndProcessSide(markToGive, leftLineX, lineEndY + 1, ref leftStreakActive);
+				stopConditionMet |= CheckStreakAndProcessSide(markToGive, rightLineX, lineEndY + 1, ref rightStreakActive);
+			}
+
 			return stopConditionMet;
 		}
 
@@ -81,7 +90,7 @@ namespace FloodSpill
 				if (!IsValidPosition(sideLineX, yInLine))
 					streakActive = false;
 			}
-			
+
 			return stopConditionMet;
 		}
 	}
