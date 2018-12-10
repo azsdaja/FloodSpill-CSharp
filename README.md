@@ -1,6 +1,6 @@
 ![logo](https://github.com/azsdaja/FloodSpill-CSharp/blob/master/icon48x48.png)
 
-# FloodSpill — an open-source multi-purpose flood-filling algorithm for C#
+# FloodSpill — a free multi-purpose flood-fill algorithm for C#
 
 ### What can you do with it? ###
 * run a **flood-fill in two-dimensional space**,
