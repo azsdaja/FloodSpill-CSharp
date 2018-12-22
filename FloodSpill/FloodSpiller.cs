@@ -8,7 +8,7 @@ namespace FloodSpill
 	/// <summary>
 	/// Realisation of flood-spill algorithm. For instructions and examples go to https://github.com/azsdaja/FloodSpill-CSharp
 	/// </summary>
-	public class FloodSpiller
+	public class FloodSpiller : IFloodSpiller
 	{
 		protected PositionQueueAdapter PositionsToVisit;
 		protected int StartX;
