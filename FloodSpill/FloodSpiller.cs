@@ -8,7 +8,7 @@ namespace FloodSpill
 	/// <summary>
 	/// Realisation of flood-spill algorithm. For instructions and examples go to https://github.com/azsdaja/FloodSpill-CSharp
 	/// </summary>
-	public class FloodSpiller
+	public class FloodSpiller : IFloodSpiller
 	{
 		protected PositionQueueAdapter PositionsToVisit;
 		protected int StartX;
@@ -34,12 +34,12 @@ namespace FloodSpill
 		/// VISITING A SPREADING POSITION means operating on a position just taken from the queue. <br/>
 		/// PROCESSING A NEIGHBOUR means operating on a position reached while spreading from VISITED SPREADING POSITION. A neighbour may be added
 		/// to the queue of positions to visit.<br/><br/>
-		/// Neighbours are marked with numbers bigger by 1 than mark numbers of VISITED POSITION they are reached from.<br/>
+		/// Neighbours by are with numbers having some relation to the number at spreading position - for example they can be bigger by 1 
+		/// than mark numbers of the position they are reached from.<br/>
 		/// </summary>
 		/// 
 		/// <remarks>Note that positions are marked before actually processing them, so if the algorithm stops with positions waiting in queue,
 		/// they will be remain marked even though they haven't been processed yet.</remarks>
-		/// 
 		/// <param name="markMatrix">A matrix that will be initialized with int.MaxValues and then used for storing positions marks. </param>
 		/// <param name="parameters">Algorithm parameters.</param>
 		/// <returns>True if execution has been stopped by meeting a stop condition. False if ran out of elements in queue.</returns>
@@ -90,13 +90,7 @@ namespace FloodSpill
 			MaxX = boundsRestriction.MaxX;
 			MaxY = boundsRestriction.MaxY;
 
-			for (int x = 0; x < MarkMatrix.GetLength(0); x++)
-			{
-				for (int y = 0; y < MarkMatrix.GetLength(1); y++)
-				{
-					MarkMatrix[x, y] = int.MaxValue;
-				}
-			} // takes ~5 ms for 2000x2000
+			InitializeMarkMatrix();
 		}
 
 		/// <summary>
@@ -120,7 +114,7 @@ namespace FloodSpill
 					return true;
 
 				// spreading from visited position
-				int markToGive = 1 + GetMark(currentX, currentY);
+				int markToGive = CalculateMark(currentX, currentY);
 				bool neighbourCausedStop = SpreadToNeighbours(currentX, currentY, markToGive);
 				if (neighbourCausedStop)
 					return true;
@@ -184,6 +178,14 @@ namespace FloodSpill
 			return neighbourCausedStop;
 		}
 
+		/// <summary>
+		/// Returns mark number that will be given to positions reached from given spreading position.
+		/// </summary>
+		protected virtual int CalculateMark(int spreadingPositionX, int spreadingPositionY)
+		{
+			return 1 + GetMark(spreadingPositionX, spreadingPositionY);
+		}
+
 		/// <returns>True if a stop condition in one of neighbours was met. Otherwise false.</returns>
 		protected bool ProcessNeighbourIfValid(int neighbourX, int neighbourY, int markToGive)
 		{
@@ -221,6 +223,15 @@ namespace FloodSpill
 		}
 
 		/// <summary>
+		/// Gets mark for given position in MarkMatrix. 
+		/// </summary>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		protected int GetMark(int x, int y)
+		{
+			return MarkMatrix[x + OffsetX, y + OffsetY];
+		}
+
+		/// <summary>
 		/// Sets given position in MarkMatrix to given mark.
 		/// </summary>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -229,13 +240,15 @@ namespace FloodSpill
 			MarkMatrix[x + OffsetX, y + OffsetY] = mark;
 		}
 
-		/// <summary>
-		/// Gets mark for given position in MarkMatrix. 
-		/// </summary>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected int GetMark(int x, int y)
+		protected virtual void InitializeMarkMatrix()
 		{
-			return MarkMatrix[x + OffsetX, y + OffsetY];
+			for (int x = 0; x < MarkMatrix.GetLength(0); x++)
+			{
+				for (int y = 0; y < MarkMatrix.GetLength(1); y++)
+				{
+					MarkMatrix[x, y] = int.MaxValue;
+				}
+			} // takes ~5 ms for 2000x2000
 		}
 
 		protected void GuardBounds(FloodBounds bounds, int startX, int startY)
