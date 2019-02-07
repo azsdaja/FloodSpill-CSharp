@@ -16,7 +16,7 @@
     <PackageIconUrl>https://github.com/azsdaja/FloodSpill-CSharp/blob/master/icon.png?raw=true</PackageIconUrl>
     <PackageReleaseNotes>First complete release.</PackageReleaseNotes>
     <PackageId>FloodSpiller</PackageId>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="C5" Version="2.5.3" />
